@@ -1,4 +1,4 @@
-LDFLAGS+=	-lX11
+LDFLAGS+=	-lX11 -lXtst
 
 srinput: srinput.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
