@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <unistd.h>
 
 #include <X11/Xlib.h>
@@ -9,12 +10,22 @@
 
 Display *d;
 sric_context ctx;
+bool quit = false;
+
+void
+signal_handler(int)
+{
+
+	quit = true;
+	return;
+}
 
 int
 main(int argc, char **argv)
 {
 	sric_frame frame;
 	sric_device *device;
+	int ret;
 
 	d = XOpenDisplay(NULL);
 	if (d == NULL)
@@ -37,8 +48,32 @@ main(int argc, char **argv)
 		abort();
 	}
 
-	/* Signal we want info on button presses */
-#error bees
+	/* Tell board we want info on button presses */
+	frame.address = device->address;
+	frame.note = -1;
+	frame.payload_length = 2;
+	frame.payload[0] = 5; /* enable notes cmd */
+	frame.payload[1] = 1;
+
+	ret = sric_txrx(ctx, &frame, &frame, -1);
+	if (ret != 0) {
+		fprintf(stderr, "Couldn't start notes: %d\n",
+					sric_get_error(ctx));
+		abort();
+	}
+
+	/* All is now fine and wonderful. Receive notifications about button
+	 * presses and post X events describing them */
+
+	/* Don't quit on signals - instead, shut down gracefully, telling the
+	 * power board to stop sending notes */
+
+	signal(SIGINT, signal_handler);
+	signal(SIGTERM, signal_handler);
+
+	while (quit == false) {
+		#error do some things
+	}
 
 	XTestFakeKeyEvent(d, XK_Up, True, 0);
 	XTestFakeKeyEvent(d, XK_Up, False, 20);
