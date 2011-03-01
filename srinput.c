@@ -79,7 +79,31 @@ main(int argc, char **argv)
 	signal(SIGTERM, signal_handler);
 
 	while (quit == false) {
-		#error do some things
+		uint16_t flags, edges;
+
+		ret = sric_poll_rx(ctx, &frame, 100);
+
+		if (ret != 0 && sric_get_error(ctx) != SRIC_ERROR_TIMEOUT) {
+			fprintf(stderr, "Error getting input note: %d\n",
+							sric_get_error(ctx));
+			break;
+		} else if (ret != 0 && sric_get_error(ctx)==SRIC_ERROR_TIMEOUT){
+			continue;
+		}
+
+		/* Unpack flags/edges. Sent little endian uint16_ts */
+		if (frame.payload_length != 5) {
+			fprintf(stderr, "Invalid length %d for input note\n",
+						frame.payload_length);
+			break;
+		}
+
+		flags = frame.payload[1];
+		flags |= frame.payload[2] << 8;
+		edges = frame.payload[3];
+		edges |= frame.payload[4] << 8;
+
+		/* And now do something with them */
 	}
 
 	/* Turn off notes */
