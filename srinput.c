@@ -82,8 +82,18 @@ main(int argc, char **argv)
 		#error do some things
 	}
 
-	XTestFakeKeyEvent(d, XK_Up, True, 0);
-	XTestFakeKeyEvent(d, XK_Up, False, 20);
+	/* Turn off notes */
+	frame.address = device->address;
+	frame.note = -1;
+	frame.payload_length = 2;
+	frame.payload[0] = 5;
+	frame.payload[1] = 0;
+	sric_txrx(ctx, &frame, &frame, -1);
+
+	/* Unregister from note */
+	sric_note_unregister(ctx, device->address, 0);
+
+	/* And close display */
 	XCloseDisplay(d);
 
 	return 0;
