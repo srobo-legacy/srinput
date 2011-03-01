@@ -30,12 +30,16 @@ main(int argc, char **argv)
 	int ret;
 
 	d = XOpenDisplay(NULL);
-	if (d == NULL)
+	if (d == NULL) {
+		fprintf(stderr, "Couldn't open X display\n");
 		abort();
+	}
 
 	ctx = sric_init();
-	if (ctx == NULL)
+	if (ctx == NULL) {
+		fprintf(stderr, "Couldn't open sricd\n");
 		abort();
+	}
 
 	/* Find power board address */
 	device = NULL;
