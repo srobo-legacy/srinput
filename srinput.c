@@ -48,6 +48,13 @@ main(int argc, char **argv)
 		abort();
 	}
 
+	ret = sric_note_register(ctx, device->address, 0);
+	if (ret != 0) {
+		fprintf(stderr, "Couldn't register interest in input note: %d\n"
+							, sric_get_error(ctx));
+		abort();
+	}
+
 	/* Tell board we want info on button presses */
 	frame.address = device->address;
 	frame.note = -1;
