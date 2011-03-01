@@ -15,7 +15,7 @@ sric_context ctx;
 bool quit = false;
 
 void
-signal_handler(int)
+signal_handler(int sig)
 {
 
 	quit = true;
@@ -26,7 +26,7 @@ int
 main(int argc, char **argv)
 {
 	sric_frame frame;
-	sric_device *device;
+	const sric_device *device;
 	int ret;
 
 	d = XOpenDisplay(NULL);
@@ -43,7 +43,7 @@ main(int argc, char **argv)
 		device = sric_enumerate_devices(ctx, device);
 		if (device->type == SRIC_CLASS_POWER)
 			break;
-	} while (device != NULL)
+	} while (device != NULL);
 
 	if (device == NULL) {
 		fprintf(stderr, "Couldn't find a plugged in power board\n");
