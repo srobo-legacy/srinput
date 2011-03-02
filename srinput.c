@@ -1,4 +1,6 @@
+#include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
 
@@ -13,7 +15,7 @@ sric_context ctx;
 bool quit = false;
 
 void
-signal_handler(int)
+signal_handler(int sig)
 {
 
 	quit = true;
@@ -51,16 +53,20 @@ int
 main(int argc, char **argv)
 {
 	sric_frame frame;
-	sric_device *device;
+	const sric_device *device;
 	int ret;
 
 	d = XOpenDisplay(NULL);
-	if (d == NULL)
+	if (d == NULL) {
+		fprintf(stderr, "Couldn't open X display\n");
 		abort();
+	}
 
 	ctx = sric_init();
-	if (ctx == NULL)
+	if (ctx == NULL) {
+		fprintf(stderr, "Couldn't open sricd\n");
 		abort();
+	}
 
 	/* Find power board address */
 	device = NULL;
@@ -68,7 +74,7 @@ main(int argc, char **argv)
 		device = sric_enumerate_devices(ctx, device);
 		if (device->type == SRIC_CLASS_POWER)
 			break;
-	} while (device != NULL)
+	} while (device != NULL);
 
 	if (device == NULL) {
 		fprintf(stderr, "Couldn't find a plugged in power board\n");
@@ -131,6 +137,7 @@ main(int argc, char **argv)
 		edges |= frame.payload[4] << 8;
 
 		/* And now do something with them */
+		printf("Ohai: flags %X edges %X\n", flags, edges);
 	}
 
 	/* Turn off notes */
