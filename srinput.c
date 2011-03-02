@@ -1,16 +1,19 @@
+#include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
 
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
-#include <X11/extensions/XTest.h>
-
 #include <sric.h>
 
-Display *d;
+#include <linux/input.h>
+
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/types.h>
+
+int evdev_fd;
 sric_context ctx;
 bool quit = false;
 
@@ -56,9 +59,9 @@ main(int argc, char **argv)
 	const sric_device *device;
 	int ret;
 
-	d = XOpenDisplay(NULL);
-	if (d == NULL) {
-		fprintf(stderr, "Couldn't open X display\n");
+	evdev_fd = open("/dev/input/uinput", O_RDWR, 0);
+	if (evdev_fd < 0) {
+		perror("Couldn't open userland input device");
 		abort();
 	}
 
@@ -137,12 +140,22 @@ main(int argc, char **argv)
 		edges = frame.payload[3];
 		edges |= frame.payload[4] << 8;
 
+		printf("flags %X\n", flags);
+
 		/* And now do something with them */
 		for (i = 0; i < 16; i++) {
+			struct input_event evt;
+
 			flag = 1 << i;
 			if (flags & flag) {
 				key = sric_flag_to_keysym(flag);
-				XTestFakeKeyEvent(d, key, True, 0);
+printf("key 0x%X sent\n", key);
+				gettimeofday(&evt.time, NULL);
+				evt.type = EV_KEY;
+				evt.code = key;
+				evt.value = 1;
+/* Send some input events */
+
 			}
 		}
 	}
@@ -157,9 +170,6 @@ main(int argc, char **argv)
 
 	/* Unregister from note */
 	sric_note_unregister(ctx, device->address, 0);
-
-	/* And close display */
-	XCloseDisplay(d);
 
 	return 0;
 }
