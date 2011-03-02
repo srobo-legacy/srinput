@@ -28,24 +28,24 @@ sric_flag_to_keysym(int flag)
 
 	switch (flag) {
 	case 1:
-		return XK_Tab;
+		return KEY_TAB;
 	case 2:
-		return XK_Page_Up;
+		return KEY_PAGEUP;
 	case 4:
-		return XK_Page_Down;
+		return KEY_PAGEDOWN;
 	case 8:
 	case 0x10:
-		return 0;
+		return KEY_RESERVED;
 	case 0x20:
-		return XK_Right;
+		return KEY_RIGHT;
 	case 0x40:
-		return XK_Left;
+		return KEY_LEFT;
 	case 0x80:
-		return XK_Up;
+		return KEY_UP;
 	case 0x100:
-		return XK_Down;
+		return KEY_DOWN;
 	default:
-		return 0;
+		return KEY_RESERVED;
 	}
 }
 
