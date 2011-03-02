@@ -31,7 +31,7 @@ sric_flag_to_keysym(int flag)
 		return XK_Tab;
 	case 2:
 		return XK_Page_Up;
-	case 4
+	case 4:
 		return XK_Page_Down;
 	case 8:
 	case 0x10:
