@@ -70,7 +70,7 @@ main(int argc, char **argv)
 
 	/* Turns out there's some setup activity: */
 	memset(&dev, 0, sizeof(dev));
-	strcpy(dev.name, "sr-input");
+	strcpy(dev.name, "powerboard");
 	dev.id.bustype = 0xFACE;
 	dev.id.vendor = 0xBEE5;
 	dev.id.product = 0xFACE;
