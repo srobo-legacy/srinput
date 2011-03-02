@@ -186,7 +186,10 @@ printf("key 0x%X sent\n", key);
 				evt.type = EV_KEY;
 				evt.code = key;
 				evt.value = 1;
-/* Send some input events */
+
+				write(evdev_fd, &evt, sizeof(evt));
+				evt.value = 0;
+				write(evdev_fd, &evt, sizeof(evt));
 
 			}
 		}
