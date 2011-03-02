@@ -110,6 +110,7 @@ main(int argc, char **argv)
 		edges |= frame.payload[4] << 8;
 
 		/* And now do something with them */
+		printf("Ohai: flags %X edges %X\n", flags, edges);
 	}
 
 	/* Turn off notes */
