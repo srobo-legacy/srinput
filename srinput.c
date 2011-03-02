@@ -115,7 +115,7 @@ main(int argc, char **argv)
 		int i, flag, key;
 		uint16_t flags, edges;
 
-		ret = sric_poll_rx(ctx, &frame, 100);
+		ret = sric_poll_note(ctx, &frame, 100);
 
 		if (ret != 0 && sric_get_error(ctx) != SRIC_ERROR_TIMEOUT) {
 			fprintf(stderr, "Error getting input note: %d\n",
