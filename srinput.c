@@ -112,6 +112,7 @@ main(int argc, char **argv)
 	signal(SIGTERM, signal_handler);
 
 	while (quit == false) {
+		int i, flag, key;
 		uint16_t flags, edges;
 
 		ret = sric_poll_rx(ctx, &frame, 100);
@@ -137,7 +138,13 @@ main(int argc, char **argv)
 		edges |= frame.payload[4] << 8;
 
 		/* And now do something with them */
-		printf("Ohai: flags %X edges %X\n", flags, edges);
+		for (i = 0; i < 16; i++) {
+			flag = 1 << i;
+			if (flags & flag) {
+				key = sric_flag_to_keysym(flag);
+				XTestFakeKeyEvent(d, key, True, 0);
+			}
+		}
 	}
 
 	/* Turn off notes */
