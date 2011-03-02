@@ -21,6 +21,33 @@ signal_handler(int)
 }
 
 int
+sric_flag_to_keysym(int flag)
+{
+
+	switch (flag) {
+	case 1:
+		return XK_Tab;
+	case 2:
+		return XK_Page_Up;
+	case 4
+		return XK_Page_Down;
+	case 8:
+	case 0x10:
+		return 0;
+	case 0x20:
+		return XK_Right;
+	case 0x40:
+		return XK_Left;
+	case 0x80:
+		return XK_Up;
+	case 0x100:
+		return XK_Down;
+	default:
+		return 0;
+	}
+}
+
+int
 main(int argc, char **argv)
 {
 	sric_frame frame;
