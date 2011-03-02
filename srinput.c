@@ -3,11 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <sric.h>
 
 #include <linux/input.h>
+#include <linux/uinput.h>
 
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -55,13 +57,43 @@ sric_flag_to_keysym(int flag)
 int
 main(int argc, char **argv)
 {
+	struct uinput_user_dev dev;
 	sric_frame frame;
 	const sric_device *device;
-	int ret;
+	int ret, k;
 
 	evdev_fd = open("/dev/input/uinput", O_RDWR, 0);
 	if (evdev_fd < 0) {
 		perror("Couldn't open userland input device");
+		abort();
+	}
+
+	/* Turns out there's some setup activity: */
+	memset(&dev, 0, sizeof(dev));
+	strcpy(dev.name, "sr-input");
+	dev.id.bustype = 0xFACE;
+	dev.id.vendor = 0xBEE5;
+	dev.id.product = 0xFACE;
+	dev.id.version = 0xBEE5;
+	if (write(evdev_fd, &dev, sizeof(dev)) != sizeof(dev)) {
+		perror("Short write when writing input dev info");
+		abort();
+	}
+
+	if (ioctl(evdev_fd, UI_SET_EVBIT, EV_KEY) < 0) {
+		perror("Couldn't identify sr input as a keyboard");
+		abort();
+	}
+
+	for (k = KEY_RESERVED; k <= KEY_UNKNOWN; k++) {
+		if (ioctl(evdev_fd, UI_SET_KEYBIT, k) < 0) {
+			perror("Couldn't set a keyboard ID bit");
+			abort();
+		}
+	}
+
+	if (ioctl(evdev_fd, UI_DEV_CREATE, NULL) < 0) {
+		perror("Couldn't create user-input input device");
 		abort();
 	}
 
