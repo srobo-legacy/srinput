@@ -19,6 +19,55 @@ int evdev_fd;
 sric_context ctx;
 bool quit = false;
 
+/* The time that we last received an input from one of the rotary encoders.
+ * Ignore all rot inputs that happen for a short period of time after that,
+ * as it turns out the encoders can fire in bursts :| */
+#define ROT_TIMEOUT	25*1000		/* 25ms between firings */
+struct timeval rot_act_time[2];
+
+static inline int
+is_rot_flag(flag)
+{
+
+	if (flag == 0x20 || flag == 0x40)
+		return 0;
+
+	if (flag == 0x80 || flag == 0x100)
+		return 1;
+
+	return -1;
+}
+
+static inline bool
+discard_rot_burst(int flag, struct timeval *now)
+{
+	int lasttime, nowtime;
+	int idx;
+
+	idx = is_rot_flag(flag);
+	if (idx < 0)
+		return false;
+
+	/* So, compare time with when we last received an input... */
+	if (now->tv_sec > rot_act_time[idx].tv_sec)
+		nowtime = 1000000;
+	else
+		nowtime = 0;
+
+	lasttime = rot_act_time[idx].tv_usec;
+	lasttime += ROT_TIMEOUT;
+	nowtime += now->tv_usec;
+
+	if (nowtime > lasttime) {
+		/* Update last time */
+		memcpy(&rot_act_time[idx], now, sizeof(*now));
+		return false;
+	}
+
+	return true;
+}
+
+
 void
 signal_handler(int sig)
 {
@@ -147,6 +196,10 @@ main(int argc, char **argv)
 	signal(SIGINT, signal_handler);
 	signal(SIGTERM, signal_handler);
 
+	/* Smooth out rot encoder bursts */
+	gettimeofday(&rot_act_time[0], NULL);
+	gettimeofday(&rot_act_time[1], NULL);
+
 	while (quit == false) {
 		int i, flag, key;
 		uint16_t flags, edges;
@@ -184,6 +237,9 @@ main(int argc, char **argv)
 			flag = 1 << i;
 			if (flags & flag) {
 				key = sric_flag_to_keysym(flag);
+
+				if (discard_rot_burst(flag, &now))
+					continue;
 printf("key 0x%X sent\n", key);
 				memcpy(&evt.time, &now, sizeof(now));
 				evt.type = EV_KEY;
