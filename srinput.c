@@ -240,15 +240,30 @@ main(int argc, char **argv)
 
 				if (discard_rot_burst(flag, &now))
 					continue;
+
 printf("key 0x%X sent\n", key);
 				memcpy(&evt.time, &now, sizeof(now));
 				evt.type = EV_KEY;
 				evt.code = key;
 				evt.value = 1;
 
-				write(evdev_fd, &evt, sizeof(evt));
-				evt.value = 0;
-				write(evdev_fd, &evt, sizeof(evt));
+				if (is_rot_flag(flag) < 0) {
+
+					/* Pressed/released? */
+					if (flag & edges) {
+						evt.value = 1;
+					} else {
+						evt.value = 0;
+					}
+
+					write(evdev_fd, &evt, sizeof(evt));
+				} else {
+					/* Rot input, send press then release
+					 * event */
+					write(evdev_fd, &evt, sizeof(evt));
+					evt.value = 0;
+					write(evdev_fd, &evt, sizeof(evt));
+				}
 
 				evt.type = EV_SYN;
 				evt.code = SYN_REPORT;
