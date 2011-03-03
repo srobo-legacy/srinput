@@ -59,6 +59,7 @@ main(int argc, char **argv)
 {
 	struct uinput_user_dev dev;
 	sric_frame frame;
+	struct timeval now;
 	const sric_device *device;
 	int ret, k;
 
@@ -172,7 +173,9 @@ main(int argc, char **argv)
 		edges = frame.payload[3];
 		edges |= frame.payload[4] << 8;
 
-		printf("flags %X\n", flags);
+		printf("flags %X edges %X\n", flags, edges);
+
+		gettimeofday(&now, NULL);
 
 		/* And now do something with them */
 		for (i = 0; i < 16; i++) {
@@ -182,7 +185,7 @@ main(int argc, char **argv)
 			if (flags & flag) {
 				key = sric_flag_to_keysym(flag);
 printf("key 0x%X sent\n", key);
-				gettimeofday(&evt.time, NULL);
+				memcpy(&evt.time, &now, sizeof(now));
 				evt.type = EV_KEY;
 				evt.code = key;
 				evt.value = 1;
