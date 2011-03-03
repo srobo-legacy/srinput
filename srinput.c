@@ -194,6 +194,10 @@ printf("key 0x%X sent\n", key);
 				evt.value = 0;
 				write(evdev_fd, &evt, sizeof(evt));
 
+				evt.type = EV_SYN;
+				evt.code = SYN_REPORT;
+				evt.value = 0;
+				write(evdev_fd, &evt, sizeof(evt));
 			}
 		}
 	}
