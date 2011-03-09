@@ -67,15 +67,6 @@ discard_rot_burst(int flag, struct timeval *now)
 	return true;
 }
 
-
-void
-signal_handler(int sig)
-{
-
-	quit = true;
-	return;
-}
-
 int
 sric_flag_to_keysym(int flag)
 {
@@ -189,12 +180,6 @@ main(int argc, char **argv)
 
 	/* All is now fine and wonderful. Receive notifications about button
 	 * presses and post X events describing them */
-
-	/* Don't quit on signals - instead, shut down gracefully, telling the
-	 * power board to stop sending notes */
-
-	signal(SIGINT, signal_handler);
-	signal(SIGTERM, signal_handler);
 
 	/* Smooth out rot encoder bursts */
 	gettimeofday(&rot_act_time[0], NULL);
