@@ -197,8 +197,6 @@ main(int argc, char **argv)
 		edges = frame.payload[3];
 		edges |= frame.payload[4] << 8;
 
-		printf("flags %X edges %X\n", flags, edges);
-
 		gettimeofday(&now, NULL);
 
 		/* And now do something with them */
@@ -212,7 +210,6 @@ main(int argc, char **argv)
 				if (discard_rot_burst(flag, &now))
 					continue;
 
-printf("key 0x%X sent\n", key);
 				memcpy(&evt.time, &now, sizeof(now));
 				evt.type = EV_KEY;
 				evt.code = key;
