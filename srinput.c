@@ -164,20 +164,6 @@ main(int argc, char **argv)
 		abort();
 	}
 
-	/* Tell board we want info on button presses */
-	frame.address = device->address;
-	frame.note = -1;
-	frame.payload_length = 2;
-	frame.payload[0] = 5; /* enable notes cmd */
-	frame.payload[1] = 1;
-
-	ret = sric_txrx(ctx, &frame, &frame, -1);
-	if (ret != 0) {
-		fprintf(stderr, "Couldn't start notes: %d\n",
-					sric_get_error(ctx));
-		abort();
-	}
-
 	/* All is now fine and wonderful. Receive notifications about button
 	 * presses and post X events describing them */
 
@@ -257,14 +243,6 @@ printf("key 0x%X sent\n", key);
 			}
 		}
 	}
-
-	/* Turn off notes */
-	frame.address = device->address;
-	frame.note = -1;
-	frame.payload_length = 2;
-	frame.payload[0] = 5;
-	frame.payload[1] = 0;
-	sric_txrx(ctx, &frame, &frame, -1);
 
 	/* Unregister from note */
 	sric_note_unregister(ctx, device->address, 0);
