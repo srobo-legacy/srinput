@@ -102,6 +102,11 @@ main(int argc, char **argv)
 	struct timeval now;
 	const sric_device *device;
 	int ret, k;
+	const char* running_fname = NULL;
+
+	if( argc == 2 )
+		/* We'll only emit events if this file exists */
+		running_fname = argv[1];
 
 	evdev_fd = open("/dev/input/uinput", O_RDWR, 0);
 	if (evdev_fd < 0) {
@@ -184,6 +189,10 @@ main(int argc, char **argv)
 		} else if (ret != 0 && sric_get_error(ctx)==SRIC_ERROR_TIMEOUT){
 			continue;
 		}
+
+		if( running_fname != NULL && access( running_fname, R_OK ) == -1 )
+			/* We're not yet allowed to pass on input events */
+			continue;
 
 		/* Unpack flags/edges. Sent little endian uint16_ts */
 		if (frame.payload_length != 5) {
