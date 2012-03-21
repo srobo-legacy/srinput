@@ -82,9 +82,11 @@ sric_flag_to_keysym(int flag)
 		/* Button 2 (bottom right) */
 		return KEY_PAGEDOWN;
 	case 8:
+		/* Rotary 0 (left) Button */
+		return KEY_SPACE;
 	case 0x10:
-		/* Rotary 0/1 Button */
-		return KEY_RESERVED;
+		/* Rotary 1 (right) Button */
+		return KEY_ENTER;
 	case 0x20:
 		/* Rotary 0 (left) CW  */
 		return KEY_RIGHT;
