@@ -73,21 +73,29 @@ sric_flag_to_keysym(int flag)
 
 	switch (flag) {
 	case 1:
+		/* Button 0 (top left) */
 		return KEY_TAB;
 	case 2:
+		/* Button 1 (top right) */
 		return KEY_PAGEUP;
 	case 4:
+		/* Button 2 (bottom right) */
 		return KEY_PAGEDOWN;
 	case 8:
 	case 0x10:
+		/* Rotary 0/1 Button */
 		return KEY_RESERVED;
 	case 0x20:
+		/* Rotary 0 (left) CW  */
 		return KEY_RIGHT;
 	case 0x40:
+		/* Rotary 0 (left) CCW */
 		return KEY_LEFT;
 	case 0x80:
+		/* Rotary 1 (right) CW */
 		return KEY_UP;
 	case 0x100:
+		/* Rotary 1 (left) CCW */
 		return KEY_DOWN;
 	default:
 		return KEY_RESERVED;
