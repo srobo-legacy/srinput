@@ -15,6 +15,23 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+/* Button 0 -- top left */
+#define PB_BUTTON_0 1
+/* Button 1 -- top right */
+#define PB_BUTTON_1 2
+/* Button 2 -- bottom right */
+#define PB_BUTTON_2 4
+
+/* Left rotary button (0) */
+#define PB_ROTARY_0_CLICK 8
+#define PB_ROTARY_0_CW 0x20
+#define PB_ROTARY_0_CCW 0x40
+
+/* Right rotary button (1) */
+#define PB_ROTARY_1_CLICK 0x10
+#define PB_ROTARY_1_CW 0x80
+#define PB_ROTARY_1_CCW 0x100
+
 int evdev_fd;
 sric_context ctx;
 bool quit = false;
@@ -72,32 +89,23 @@ sric_flag_to_keysym(int flag)
 {
 
 	switch (flag) {
-	case 1:
-		/* Button 0 (top left) */
+	case PB_BUTTON_0:
 		return KEY_TAB;
-	case 2:
-		/* Button 1 (top right) */
+	case PB_BUTTON_1:
 		return KEY_PAGEUP;
-	case 4:
-		/* Button 2 (bottom right) */
+	case PB_BUTTON_2:
 		return KEY_PAGEDOWN;
-	case 8:
-		/* Rotary 0 (left) Button */
+	case PB_ROTARY_0_CLICK:
 		return KEY_SPACE;
-	case 0x10:
-		/* Rotary 1 (right) Button */
+	case PB_ROTARY_1_CLICK:
 		return KEY_ENTER;
-	case 0x20:
-		/* Rotary 0 (left) CW  */
+	case PB_ROTARY_0_CW:
 		return KEY_RIGHT;
-	case 0x40:
-		/* Rotary 0 (left) CCW */
+	case PB_ROTARY_0_CCW:
 		return KEY_LEFT;
-	case 0x80:
-		/* Rotary 1 (right) CW */
+	case PB_ROTARY_1_CW:
 		return KEY_UP;
-	case 0x100:
-		/* Rotary 1 (left) CCW */
+	case PB_ROTARY_1_CCW:
 		return KEY_DOWN;
 	default:
 		return KEY_RESERVED;
